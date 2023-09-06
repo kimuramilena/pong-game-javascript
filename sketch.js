@@ -5,8 +5,8 @@ let diameter = 25;
 let radius = diameter /2;
 
 //speed ball
-let speedXBall = 5;
-let speedYBall = 5;
+let speedXBall = 3;
+let speedYBall = 3;
 
 //racket variables
 let xRacket = 5;
@@ -15,7 +15,7 @@ let widthRacket = 5;
 let heightRacket = 70;
 
 // opponents variable
-let xOpponentRacket = 585;
+let xOpponentRacket = 590;
 let yOpponentRacket = 150;
 let opponentYspeed;
 
@@ -28,39 +28,16 @@ let racketTune;
 let pointsTune;
 let soundtrackTune;
 
-function preload( ) {
-  soundtrackTune = loadSound("trilha.mp3");
-  pointsTune = loadSound("ponto.mp3");
-  racketTune = loadSound("raquetada.mp3");
-}
-
-function setup() {
-  createCanvas(600, 400);
-  soundtrackTune.loop();
-}
-
-function draw() {
-  background(0);
-  showTheBall();
-  ballSpeed();
-  checkboardcollision();
-  showTheRacket(xRacket, yRacket);
-  myRacketMovement();
-  checkRacketCollision();
-  showTheRacket(xOpponentRacket, yOpponentRacket);
-  opponentRacketMovement();
-  checkOpponentRacketCollision();
-  addGameScore();
-  scorePoints();
-}
 
 function showTheBall(){
     circle(xBall, yBall, diameter);
 }
+
 function ballSpeed() {
     xBall += speedXBall;
     yBall += speedYBall;
 }
+
 function checkboardcollision () {
    if (xBall + radius > width ||
      xBall - radius < 0) {
@@ -71,25 +48,39 @@ function checkboardcollision () {
      speedYBall *= -1;
   }
 }
-function showTheRacket (x,y) {
-  rect(x, y, widthRacket, heightRacket);
-}
 
 function myRacketMovement () { 
   if (keyIsDown(UP_ARROW)) {
     yRacket -=10;
   }
-    if (keyIsDown(DOWN_ARROW)) {
+  if (keyIsDown(DOWN_ARROW)) {
     yRacket +=10;
-    yRacket = constrain(yRacket, 10, 325);
   }
+  yRacket = constrain(yRacket, 10, 325);
 }
+
 function checkRacketCollision () {
-  if (xBall - radius < xRacket + widthRacket & yBall - radius < yRacket + heightRacket & yBall + radius > yRacket) {
+  let parte_de_cima_da_bolinha = yBall - radius
+  let parte_de_baixo_da_bolinha = yBall + radius
+  let parte_de_baixo_da_raquete = yRacket + heightRacket
+  let parte_de_cima_da_raquete = yRacket
+  
+  if (xBall - radius < xRacket + widthRacket && parte_de_cima_da_bolinha < parte_de_baixo_da_raquete && parte_de_baixo_da_bolinha > parte_de_cima_da_raquete) {
     speedXBall *= -1;
     racketTune.play();
   }
 }
+
+function showTheRacket(x,y) {
+  rect(x, y, widthRacket, heightRacket);
+}
+
+
+function setup() {
+  createCanvas(600, 400);
+  soundtrackTune.loop();
+}
+
 function opponentRacketMovement () {
   opponentYspeed = yBall - yOpponentRacket - widthRacket / 2 - 30;
   yOpponentRacket += opponentYspeed;
@@ -97,7 +88,7 @@ function opponentRacketMovement () {
 }
 
 function checkOpponentRacketCollision () {
-  if( xBall + radius > xOpponentRacket & yBall + radius < yOpponentRacket + heightRacket & yBall + radius > yOpponentRacket - heightRacket) {
+  if( xBall + radius > xOpponentRacket && yBall + radius < yOpponentRacket + heightRacket && yBall + radius > yOpponentRacket - heightRacket) {
     speedXBall *= -1;
    racketTune.play();
   }
@@ -124,4 +115,25 @@ function scorePoints() {
     opponentPoints += 1;
     pointsTune.play();
   }
+}
+
+function preload( ) {
+  soundtrackTune = loadSound("trilha.mp3");
+  pointsTune = loadSound("ponto.mp3");
+  racketTune = loadSound("raquetada.mp3");
+}
+
+function draw() {
+  background(0);
+  showTheBall();
+  ballSpeed();
+  checkboardcollision();
+  showTheRacket(xRacket, yRacket);
+  showTheRacket(xOpponentRacket, yOpponentRacket);
+  myRacketMovement();
+  checkRacketCollision();
+  opponentRacketMovement();
+  checkOpponentRacketCollision();
+  addGameScore();
+  scorePoints();
 }
